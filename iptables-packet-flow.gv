@@ -1,0 +1,36 @@
+digraph G {
+
+    {
+        "Network in" [shape=parallelogram, style=filled];
+        "Network out" [shape=parallelogram, style=filled];
+
+        "LOCAL PROCESS" [shape=hexagon, style=filled];
+
+        "ROUTING DECISION 1" [shape=box, style="filled,rounded"];
+        "ROUTING DECISION 2" [shape=box, style="filled,rounded"];
+        "ROUTING DECISION 3" [shape=box, style="filled,rounded"];
+    }
+
+    "Network in" -> "raw\nPREROUTING";
+    "raw\nPREROUTING" -> "mangle\nPREROUTING";
+    "mangle\nPREROUTING" -> "nat\nPREROUTING";
+    "nat\nPREROUTING" -> "ROUTING DECISION 1";
+    "ROUTING DECISION 1" -> "mangle\nFORWARD";
+    "mangle\nFORWARD" -> "filter\nFORWARD";
+    "filter\nFORWARD" -> "ROUTING DECISION 3";
+    "ROUTING DECISION 3" -> "mangle\nPOSTROUTING";
+    "mangle\nPOSTROUTING" -> "nat\nPOSTROUTING";
+    "nat\nPOSTROUTING" -> "Network out" [style=filled];
+
+    "ROUTING DECISION 1" -> "mangle\nINPUT";
+    "mangle\nINPUT" -> "filter\nINPUT";
+    "filter\nINPUT" -> "LOCAL PROCESS";
+
+    "LOCAL PROCESS" -> "ROUTING DECISION 2";
+    "ROUTING DECISION 2" -> "raw\nOUTPUT";
+    "raw\nOUTPUT" -> "mangle\nOUTPUT";
+    "mangle\nOUTPUT" -> "nat\nOUTPUT";
+    "nat\nOUTPUT" -> "filter\nOUTPUT";
+    "filter\nOUTPUT" -> "ROUTING DECISION 3";
+
+}
